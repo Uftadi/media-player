@@ -1,25 +1,24 @@
 import axios from 'axios';
-import { UserContext } from '../../../contex/UserContexProvider';
+import { UserContext } from '../../context/UserContextProvider';
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const LogIn = () => {
-  const { setHasToken, backendApiUrl } = useContext(UserContext);
+  const { backendApiUrl } = useContext(UserContext);
 
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthTrue, setIsAuthTrue] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(
-    {
-      email: '',
-      password: '',
-    },
-    {
-      withCredentials: true,
-    }
-  );
+  const [userData, setUserData] = useState({
+    email: '',
+    password: '',
+  });
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    password: '',
+  });
 
   const handleDataChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -33,22 +32,29 @@ const LogIn = () => {
       const res = await axios.post(`${backendApiUrl}/login`, userData, {
         withCredentials: true,
       });
+
       console.log(res);
-      if (res.data.success === false) {
+      if (res.data.errors) {
+        const errors = {};
+        res.data.errors.forEach((error) => {
+          errors[error.path] = error.msg;
+        });
+        console.log(errors);
+
+        setFieldErrors(errors);
+        setLoading(false);
         setLoading(false);
         setIsAuthTrue(true);
-      } else {
+      } else if (res.data.success === true) {
         navigate('/main');
       }
-
-      setHasToken(true);
     } catch (error) {
       console.log('error while logging in:', error);
     }
   };
 
   return (
-    <section className='min-h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
+    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
       <Link to='/' className='mb-8 text-xl font-black'>
         Media Plyer
       </Link>
@@ -56,6 +62,7 @@ const LogIn = () => {
       <form
         className='w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#184675] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl'
         onSubmit={handleFormSubmit}
+        noValidate
       >
         <div>
           <label htmlFor='email'>Email</label>
@@ -64,10 +71,15 @@ const LogIn = () => {
             type='email'
             id='email'
             name='email'
-            required
             onChange={handleDataChange}
           />
         </div>
+
+        {fieldErrors.email && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.email}
+          </span>
+        )}
 
         <div className='relative'>
           <label htmlFor='password'>Password</label>
@@ -76,25 +88,20 @@ const LogIn = () => {
             type={showPassword ? 'text' : 'password'}
             id='password'
             name='password'
-            required
             onChange={handleDataChange}
           />
-          {showPassword ? (
-            <i
-              className='fa-solid fa-eye-slash absolute right-3 top-9 cursor-pointer text-black'
-              onClick={() => setShowPassword(!showPassword)}
-            ></i>
-          ) : (
-            <i
-              className='fa-solid fa-eye absolute right-3 top-9 cursor-pointer text-black'
-              onClick={() => setShowPassword(!showPassword)}
-            ></i>
-          )}
+          <i
+            className={`fa-solid ${
+              showPassword ? 'fa-eye-slash' : 'fa-eye'
+            } absolute right-3 top-9 cursor-pointer text-black`}
+            onClick={() => setShowPassword(!showPassword)}
+          ></i>
         </div>
-        {isAuthTrue && (
-          <p className='text-[#eff96c] font-bold w-fit mb-3'>
-            The Email or Password entered is incorrect.
-          </p>
+
+        {fieldErrors.password && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.password}
+          </span>
         )}
 
         {loading ? (
