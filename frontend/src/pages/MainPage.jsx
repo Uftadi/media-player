@@ -27,12 +27,10 @@ const MainPage = () => {
   useEffect(() => {
     const token = handleIfUserHasToken();
 
-    console.log(token);
     if (token) {
       axios
         .post(`${backendApiUrl}/isAuth`, { token }, { withCredentials: true })
         .then((res) => {
-          console.log(res.data.isAuth);
           if (res.data.isAuth) {
             setIsAuthenticated(true);
           } else {
@@ -45,7 +43,33 @@ const MainPage = () => {
     }
   }, [isAuthenticated]);
 
-  return isAuthenticated && <div>MainPage</div>;
+  const logoutHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        `${backendApiUrl}/logout`,
+        {},
+        { withCredentials: true }
+      );
+      console.log(res.data.msg);
+      if (res.data.msg === 'successfully logged out') {
+        navigate('/');
+      }
+      console.log('successfully logged out', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    isAuthenticated && (
+      <>
+        <div>MainPage</div>
+        <button onClick={logoutHandler}>Logout</button>
+      </>
+    )
+  );
 };
 
 export default MainPage;

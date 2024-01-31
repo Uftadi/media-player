@@ -83,3 +83,10 @@ export const LogIn = async (req, res) => {
     res.status(500).send({ success: false, error: error.message });
   }
 };
+
+// Logout
+export const Logout = async (req, res) => {
+  res.clearCookie('jwt');
+  res.clearCookie('JWTinfo');
+  res.send({ msg: 'successfully logged out' });
+};
