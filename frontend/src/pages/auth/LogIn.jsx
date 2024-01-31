@@ -33,22 +33,23 @@ const LogIn = () => {
         withCredentials: true,
       });
 
-      console.log(res);
+      console.log(res.data.errors);
+
       if (res.data.errors) {
         const errors = {};
         res.data.errors.forEach((error) => {
           errors[error.path] = error.msg;
         });
-        console.log(errors);
 
         setFieldErrors(errors);
         setLoading(false);
-      }
-      if (res.data.success) {
+        console.log(errors);
+      } else if (res.data.success) {
         navigate('/main');
       } else {
-        setIsAuthTrue(true);
+        setFieldErrors((error) => error === '');
         setLoading(false);
+        setIsAuthTrue(true);
       }
     } catch (error) {
       console.log('error while logging in:', error);
