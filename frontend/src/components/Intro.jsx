@@ -3,10 +3,8 @@ import { motion } from 'framer-motion';
 
 const Intro = () => {
   return (
-    <div className='relative h-[calc(100vh-56px)] flex justify-left items-center gap-10 ml-52'>
+    <div className='relative min-h-[800px] h-screen flex justify-left items-center gap-10 ml-52'>
       <div className='relative '>
-        {/* <div className='absolute inset-0 bg-[#576CBC] opacity-50'></div> */}
-
         <div
           className='relative flex flex-col text-white justify-start gap-4 p-10'
           style={{ textShadow: '-5px 10px 40px black' }}

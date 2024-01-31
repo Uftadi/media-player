@@ -37,7 +37,7 @@ const SignUp = () => {
   };
   console.log(validateError);
   return (
-    <section className='min-h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
+    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
       <Link to='/' className='mb-8 text-xl font-black'>
         Media Plyer
       </Link>
@@ -52,39 +52,41 @@ const SignUp = () => {
               {field[0].toUpperCase() + field.slice(1)}
             </label>
 
-            <input
-              className={`block w-full text-black rounded-md p-2 mb-3 mt-1`}
-              type={
-                field === 'password' && showPassword
-                  ? 'text'
-                  : field === 'password'
-                  ? 'password'
-                  : field === 'email'
-                  ? 'email'
-                  : 'text'
-              }
-              required
-              id={field}
-              name={
-                field === 'password'
-                  ? 'password'
-                  : field === 'email'
-                  ? 'email'
-                  : field === 'first name'
-                  ? 'firstName'
-                  : 'lastName'
-              }
-              onChange={handleFormChange}
-            />
+            <div className='relative'>
+              <input
+                className={`block w-full text-black rounded-md p-2 mb-3 mt-1`}
+                type={
+                  field === 'password' && showPassword
+                    ? 'text'
+                    : field === 'password'
+                    ? 'password'
+                    : field === 'email'
+                    ? 'email'
+                    : 'text'
+                }
+                required
+                id={field}
+                name={
+                  field === 'password'
+                    ? 'password'
+                    : field === 'email'
+                    ? 'email'
+                    : field === 'first name'
+                    ? 'firstName'
+                    : 'lastName'
+                }
+                onChange={handleFormChange}
+              />
 
-            {field === 'password' && (
-              <i
-                className={`fa-solid ${
-                  showPassword ? 'fa-eye-slash' : 'fa-eye'
-                } absolute right-3 top-9 cursor-pointer text-black`}
-                onClick={() => setShowPassword(!showPassword)}
-              ></i>
-            )}
+              {field === 'password' && (
+                <i
+                  className={`fa-solid ${
+                    showPassword ? 'fa-eye-slash' : 'fa-eye'
+                  } absolute right-3 top-[12px] cursor-pointer text-black`}
+                  onClick={() => setShowPassword(!showPassword)}
+                ></i>
+              )}
+            </div>
           </div>
         ))}
 

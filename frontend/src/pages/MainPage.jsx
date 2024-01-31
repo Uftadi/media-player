@@ -45,8 +45,6 @@ const MainPage = () => {
     }
   }, [isAuthenticated]);
 
-  console.log(isAuthenticated);
-
   return isAuthenticated && <div>MainPage</div>;
 };
 

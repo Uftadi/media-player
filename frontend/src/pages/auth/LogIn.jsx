@@ -49,7 +49,7 @@ const LogIn = () => {
   };
 
   return (
-    <section className='min-h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
+    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
       <Link to='/' className='mb-8 text-xl font-black'>
         Media Plyer
       </Link>

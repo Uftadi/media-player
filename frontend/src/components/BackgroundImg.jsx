@@ -1,10 +1,9 @@
 import Intro from './Intro';
 import backgroundImage from '../assets/images/backgroundImg.jpg';
-import { motion } from 'framer-motion';
 
 const BackgroundImg = () => {
   return (
-    <div className='absolute inset-0'>
+    <div className='absolute inset-0 min-h-[800px] h-screen'>
       <div
         className='relative bg-cover bg-center bg-no-repeat h-full w-full'
         style={{
