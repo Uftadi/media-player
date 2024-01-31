@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const backendApiUrl =
     import.meta.env.VITE_NODE_ENV === 'development'
       ? 'http://localhost:3000'
@@ -45,10 +46,9 @@ const SignUp = () => {
         setFieldErrors(errors);
         setLoading(false);
       } else {
-        // Handle success (redirect or other actions)
+        navigate('/main');
       }
     } catch (error) {
-      // Handle error
       setLoading(false);
     }
   };

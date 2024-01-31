@@ -24,3 +24,16 @@ export const signupSchema = [
 
   body('lastName').notEmpty().withMessage('LastName is required').escape(),
 ];
+
+export const logInSchema = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email address is required')
+    .if(body('email').notEmpty())
+    .isEmail()
+    .withMessage('Email address is not valid')
+    .normalizeEmail(),
+
+  body('password').trim().notEmpty().withMessage('Password is required'),
+];

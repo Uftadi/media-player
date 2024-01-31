@@ -11,15 +11,14 @@ const LogIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthTrue, setIsAuthTrue] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(
-    {
-      email: '',
-      password: '',
-    },
-    {
-      withCredentials: true,
-    }
-  );
+  const [userData, setUserData] = useState({
+    email: '',
+    password: '',
+  });
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    password: '',
+  });
 
   const handleDataChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -30,19 +29,25 @@ const LogIn = () => {
     setLoading(true);
 
     try {
-      axios
-        .post(`${backendApiUrl}/login`, userData, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data.success);
-          if (res.data.success === false) {
-            setLoading(false);
-            setIsAuthTrue(true);
-          } else if (res.data.success === true) {
-            navigate('/main');
-          }
+      const res = await axios.post(`${backendApiUrl}/login`, userData, {
+        withCredentials: true,
+      });
+
+      console.log(res);
+      if (res.data.errors) {
+        const errors = {};
+        res.data.errors.forEach((error) => {
+          errors[error.path] = error.msg;
         });
+        console.log(errors);
+
+        setFieldErrors(errors);
+        setLoading(false);
+        setLoading(false);
+        setIsAuthTrue(true);
+      } else if (res.data.success === true) {
+        navigate('/main');
+      }
     } catch (error) {
       console.log('error while logging in:', error);
     }
@@ -57,6 +62,7 @@ const LogIn = () => {
       <form
         className='w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#184675] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl'
         onSubmit={handleFormSubmit}
+        noValidate
       >
         <div>
           <label htmlFor='email'>Email</label>
@@ -65,10 +71,15 @@ const LogIn = () => {
             type='email'
             id='email'
             name='email'
-            required
             onChange={handleDataChange}
           />
         </div>
+
+        {fieldErrors.email && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.email}
+          </span>
+        )}
 
         <div className='relative'>
           <label htmlFor='password'>Password</label>
@@ -77,7 +88,6 @@ const LogIn = () => {
             type={showPassword ? 'text' : 'password'}
             id='password'
             name='password'
-            required
             onChange={handleDataChange}
           />
           <i
@@ -87,10 +97,11 @@ const LogIn = () => {
             onClick={() => setShowPassword(!showPassword)}
           ></i>
         </div>
-        {isAuthTrue && (
-          <p className='text-[#eff96c] font-bold w-fit mb-3'>
-            The Email or Password entered is incorrect.
-          </p>
+
+        {fieldErrors.password && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.password}
+          </span>
         )}
 
         {loading ? (
