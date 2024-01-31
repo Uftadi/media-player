@@ -43,10 +43,12 @@ const LogIn = () => {
 
         setFieldErrors(errors);
         setLoading(false);
-        setLoading(false);
-        setIsAuthTrue(true);
-      } else if (res.data.success === true) {
+      }
+      if (res.data.success) {
         navigate('/main');
+      } else {
+        setIsAuthTrue(true);
+        setLoading(false);
       }
     } catch (error) {
       console.log('error while logging in:', error);
@@ -74,13 +76,11 @@ const LogIn = () => {
             onChange={handleDataChange}
           />
         </div>
-
         {fieldErrors.email && (
           <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
             {fieldErrors.email}
           </span>
         )}
-
         <div className='relative'>
           <label htmlFor='password'>Password</label>
           <input
@@ -97,10 +97,15 @@ const LogIn = () => {
             onClick={() => setShowPassword(!showPassword)}
           ></i>
         </div>
-
         {fieldErrors.password && (
           <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
             {fieldErrors.password}
+          </span>
+        )}
+
+        {isAuthTrue && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            The Email or Password entered is incorrect.
           </span>
         )}
 
@@ -136,7 +141,6 @@ const LogIn = () => {
             Log In
           </button>
         )}
-
         <p className='mt-2'>
           Don't have an account ?
           <Link to='/signup' className='ml-2 hover:underline'>
