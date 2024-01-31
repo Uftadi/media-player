@@ -43,6 +43,7 @@ const LogIn = () => {
 
         setFieldErrors(errors);
         setLoading(false);
+        setIsAuthTrue(false);
         console.log(errors);
       } else if (res.data.success) {
         navigate('/main');
