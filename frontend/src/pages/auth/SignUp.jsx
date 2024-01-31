@@ -46,7 +46,7 @@ const SignUp = () => {
         setFieldErrors(errors);
         setLoading(false);
       } else {
-        navigate('/main');
+        navigate('/login');
       }
     } catch (error) {
       setLoading(false);
