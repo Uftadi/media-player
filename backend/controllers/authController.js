@@ -25,10 +25,6 @@ export const SignUp = async (req, res) => {
 };
 
 //Log In
-/**
- * @param {import('express').Request} req - The request object.
- * @param {import('express').Response} res - The response object.
- */
 export const LogIn = async (req, res) => {
   const { email, password } = req.body;
 
@@ -74,7 +70,7 @@ export const LogIn = async (req, res) => {
     };
     const payload = {
       expires: expiresInDate.toISOString(),
-      userID: loggedUser._id,
+      userId: loggedUser._id,
     };
     res.cookie('JWTinfo', payload, options);
 

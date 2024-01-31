@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { UserContext } from '../../../contex/UserContexProvider';
+import { UserContext } from '../../context/UserContextProvider';
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const LogIn = () => {
-  const { setHasToken, backendApiUrl } = useContext(UserContext);
+  const { backendApiUrl } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -30,18 +30,19 @@ const LogIn = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${backendApiUrl}/login`, userData, {
-        withCredentials: true,
-      });
-      console.log(res);
-      if (res.data.success === false) {
-        setLoading(false);
-        setIsAuthTrue(true);
-      } else {
-        navigate('/main');
-      }
-
-      setHasToken(true);
+      axios
+        .post(`${backendApiUrl}/login`, userData, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res.data.success);
+          if (res.data.success === false) {
+            setLoading(false);
+            setIsAuthTrue(true);
+          } else if (res.data.success === true) {
+            navigate('/main');
+          }
+        });
     } catch (error) {
       console.log('error while logging in:', error);
     }
@@ -79,17 +80,12 @@ const LogIn = () => {
             required
             onChange={handleDataChange}
           />
-          {showPassword ? (
-            <i
-              className='fa-solid fa-eye-slash absolute right-3 top-9 cursor-pointer text-black'
-              onClick={() => setShowPassword(!showPassword)}
-            ></i>
-          ) : (
-            <i
-              className='fa-solid fa-eye absolute right-3 top-9 cursor-pointer text-black'
-              onClick={() => setShowPassword(!showPassword)}
-            ></i>
-          )}
+          <i
+            className={`fa-solid ${
+              showPassword ? 'fa-eye-slash' : 'fa-eye'
+            } absolute right-3 top-9 cursor-pointer text-black`}
+            onClick={() => setShowPassword(!showPassword)}
+          ></i>
         </div>
         {isAuthTrue && (
           <p className='text-[#eff96c] font-bold w-fit mb-3'>
