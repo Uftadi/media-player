@@ -20,8 +20,9 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/", authRouter);
-app.get("/", isAuth, authRouter);
+
+app.use('/', authRouter);
+
 
 if (await BDConnect) {
 	app.listen(PORT, () => {

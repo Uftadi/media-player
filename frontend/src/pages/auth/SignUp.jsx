@@ -1,83 +1,141 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import cookie from "js-cookie";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
-	const backendApiUrl =
-		import.meta.env.VITE_NODE_ENV === "development"
-			? "http://localhost:3000"
-			: "vercel";
+  const navigate = useNavigate();
+  const backendApiUrl =
+    import.meta.env.VITE_NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : 'vercel';
 
-	const navigate = useNavigate();
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+  });
 
-	const [userData, setUserData] = useState({
-		firstName: "",
-		lastName: "",
-		email: "",
-		password: "",
-	});
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
 
-	const handleFormChange = (e) => {
-		setUserData({ ...userData, [e.target.name]: e.target.value.toLowerCase() });
-	};
-	console.log(userData);
+  const handleFormChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value.toLowerCase() });
+  };
 
-	const handleFormSubmit = (e) => {
-		e.preventDefault();
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-		axios.post(`${backendApiUrl}/signup`, userData).then((res) => {
-			console.log(res.data);
-		});
-	};
+    try {
+      const res = await axios.post(`${backendApiUrl}/signup`, userData);
 
-	return (
-		<section classNameNameNameName="min-h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white">
-			<Link to="/" classNameNameNameName="mb-8 text-xl font-black">
-				Media Plyer
-			</Link>
+      if (res.data.errors) {
+        const errors = {};
+        res.data.errors.forEach((error) => {
+          errors[error.path] = error.msg;
+        });
+        console.log(errors);
 
-			<form
-				classNameNameNameName="w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#184675] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl"
-				onSubmit={handleFormSubmit}
-			>
-				{["first name", "last name", "email", "password"].map((field) => (
-					<div key={field}>
-						<label htmlFor={field}>
-							{field[0].toUpperCase() + field.slice(1)}
-						</label>
+        setFieldErrors(errors);
+        setLoading(false);
+      } else {
+        navigate('/login');
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
-						<input
-							classNameNameNameName="block w-full text-black rounded-md p-2 mb-3 mt-1"
-							type={
-								field === "password"
-									? "password"
-									: field === "email"
-									? "email"
-									: "text"
-							}
-							required
-							id={field}
-							name={
-								field === "password"
-									? "password"
-									: field === "email"
-									? "email"
-									: field === "first name"
-									? "firstName"
-									: "lastName"
-							}
-							onChange={handleFormChange}
-						/>
-					</div>
-				))}
+  return (
+    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
+      <Link to='/' className='mb-8 text-xl font-black'>
+        Media Player
+      </Link>
 
-				<button
-					classNameNameNameName="font-bold bg-[#0b1c34] w-full mx-auto transition-colors delay-75 duration-500 text-textWhite block rounded-md p-2 mb-3 border border-[#0b1c34] hover:border-white"
-					type="submit"
-				>
-					Sign Up
-				</button>
+      <form
+        className='w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#184675] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl'
+        onSubmit={handleFormSubmit}
+        noValidate
+      >
+        {['firstName', 'lastName', 'email', 'password'].map((field) => (
+          <div key={field}>
+            <label htmlFor={field}>
+              {field[0].toUpperCase() + field.slice(1)}
+            </label>
+
+            <div className='relative'>
+              <input
+                className={`block w-full text-black rounded-md p-2 mb-3 mt-1`}
+                type={
+                  field === 'password' && showPassword
+                    ? 'text'
+                    : field === 'password'
+                    ? 'password'
+                    : field === 'email'
+                    ? 'email'
+                    : 'text'
+                }
+                id={field}
+                name={
+                  field === 'password'
+                    ? 'password'
+                    : field === 'email'
+                    ? 'email'
+                    : field === 'firstName'
+                    ? 'firstName'
+                    : 'lastName'
+                }
+                onChange={handleFormChange}
+              />
+
+              {field === 'password' && (
+                <i
+                  className={`fa-solid ${
+                    showPassword ? 'fa-eye-slash' : 'fa-eye'
+                  } absolute right-3 top-[12px] cursor-pointer text-black`}
+                  onClick={() => setShowPassword(!showPassword)}
+                ></i>
+              )}
+            </div>
+
+            {fieldErrors[field] && (
+              <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+                {fieldErrors[field]}
+              </span>
+            )}
+          </div>
+        ))}
+
+        {loading ? (
+          <button
+            disabled
+            className='font-bold bg-[#0b1c34] w-full p-2 mb-3 rounded-md flex justify-center items-center cursor-wait'
+          >
+            <svg
+              aria-hidden='true'
+              role='status'
+              className='inline w-4 h-4 me-3 text-white animate-spin'
+              viewBox='0 0 100 101'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            ></svg>
+            Loading...
+          </button>
+        ) : (
+          <button
+            className='font-bold bg-[#0b1c34] w-full mx-auto transition-colors delay-75 duration-500 text-textWhite block rounded-md p-2 mb-3 border border-[#0b1c34] hover:border-white'
+            type='submit'
+          >
+            Sign Up
+          </button>
+        )}
 
 				<p classNameNameNameName="mt-2">
 					Already have an account ?

@@ -1,5 +1,4 @@
 import cookie from "js-cookie"; // cookie parser
-import { useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContexProvider";
 import { useNavigate } from "react-router-dom";
 import MediaPlayer from "../components/MediaPlayer";
@@ -7,38 +6,72 @@ import Playlist from "../components/Playlist";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
+import { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+
 
 const MainPage = () => {
-	// const { hasToken } = useContext(UserContext);
-	// const navigate = useNavigate();
+  const { backendApiUrl } = useContext(UserContext);
+  const navigate = useNavigate();
 
-	// const handleIfUserHasToken = () => {
-	// 	console.log("handleIfUserHasToken aufgerufen");
-	// 	// folgendes würde undefines zurückgeben, da das JWT Cookie "httpOnly" ist
-	// 	// const JWTcookie = cookie.get("JWT");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-	// 	// 1. Wert von JWTinfo Cookie auslesen und den darin enthaltenen JSON-String parsen
-	// 	let JWTinfocookie = cookie.get("JWTinfo");
+  const handleIfUserHasToken = () => {
+    let JWTinfocookie = cookie.get('JWTinfo');
 
-	// 	console.log("JWTinfo cookie", JWTinfocookie); // => j:{"expires":"2024-01-25T09:26:05.444Z","email":"Anna@dci.org"}
-	// 	if (!JWTinfocookie) return;
+    if (!JWTinfocookie) return;
 
-	// 	// ":j" aus dem String in JWTinfo cookie entfernen und String parsen
-	// 	JWTinfocookie = JWTinfocookie.replace("j:", "");
-	// 	const cookieValueObj = JSON.parse(JWTinfocookie);
-	// 	console.log("cookieValueObj", cookieValueObj);
+    JWTinfocookie = JWTinfocookie.replace('j:', '');
+    const cookieValueObj = JSON.parse(JWTinfocookie);
 
-	// 	// 2. Ist das Token schon abgelaufen
-	// 	// bzw. wie lange ist es noch gültig (zeitlich betrachtet)?
-	// 	const expirationInMs = new Date(cookieValueObj.expires) - new Date();
-	// 	console.log("JWT läuft ab in", expirationInMs / 1000, "Sekunden");
+    const expirationInMs = new Date(cookieValueObj.expires) - new Date();
 
-	// 	if (expirationInMs <= 0) return;
-	// };
+    if (expirationInMs <= 0) return;
+    return JWTinfocookie;
+  };
 
-	return (
-		<>
-			<Navbar />
+  useEffect(() => {
+    const token = handleIfUserHasToken();
+
+    if (token) {
+      axios
+        .post(`${backendApiUrl}/isAuth`, { token }, { withCredentials: true })
+        .then((res) => {
+          if (res.data.isAuth) {
+            setIsAuthenticated(true);
+          } else {
+            navigate('/');
+          }
+        })
+        .catch((error) => console.error('Error in /isAuth:', error));
+    } else {
+      navigate('/');
+    }
+  }, [isAuthenticated]);
+
+  const logoutHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        `${backendApiUrl}/logout`,
+        {},
+        { withCredentials: true }
+      );
+      console.log(res.data.msg);
+      if (res.data.msg === 'successfully logged out') {
+        navigate('/');
+      }
+      console.log('successfully logged out', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    isAuthenticated && (
+      <>
+  			<Navbar />
 			<div className="flex justify-around bg-[#232326] h-[700px] relative pt-8">
 				{/* <div className="">
 					<Sidebar />
@@ -51,8 +84,9 @@ const MainPage = () => {
 				</div>
 			</div>
 			<Footer />
-		</>
-	);
+      </>
+    )
+  );
 };
 
 export default MainPage;
