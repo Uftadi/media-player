@@ -1,8 +1,14 @@
+import cookie from "js-cookie"; // cookie parser
+import { UserContext } from "../context/UserContexProvider";
+import { useNavigate } from "react-router-dom";
+import MediaPlayer from "../components/MediaPlayer";
+import Playlist from "../components/Playlist";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import Footer from "../components/Footer";
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../context/UserContextProvider';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import cookie from 'js-cookie';
+
 
 const MainPage = () => {
   const { backendApiUrl } = useContext(UserContext);
@@ -65,8 +71,19 @@ const MainPage = () => {
   return (
     isAuthenticated && (
       <>
-        <div>MainPage</div>
-        <button onClick={logoutHandler}>Logout</button>
+  			<Navbar />
+			<div className="flex justify-around bg-[#232326] h-[700px] relative pt-8">
+				{/* <div className="">
+					<Sidebar />
+				</div> */}
+				<div className="">
+					<MediaPlayer />
+				</div>
+				<div className="">
+					<Playlist />
+				</div>
+			</div>
+			<Footer />
       </>
     )
   );

@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import { UserContext } from '../../context/UserContextProvider';
 import { useState, useContext } from 'react';
@@ -6,7 +7,9 @@ import { Link, useNavigate } from 'react-router-dom';
 const LogIn = () => {
   const { backendApiUrl } = useContext(UserContext);
 
-  const navigate = useNavigate();
+
+	const navigate = useNavigate();
+
 
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthTrue, setIsAuthTrue] = useState(false);
@@ -20,14 +23,15 @@ const LogIn = () => {
     password: '',
   });
 
-  const handleDataChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+	const handleDataChange = (e) => {
+		setUserData({ ...userData, [e.target.name]: e.target.value });
+	};
 
+	const handleFormSubmit = async (e) => {
+		e.preventDefault();
+		setLoading(true);
+    
     try {
       const res = await axios.post(`${backendApiUrl}/login`, userData, {
         withCredentials: true,

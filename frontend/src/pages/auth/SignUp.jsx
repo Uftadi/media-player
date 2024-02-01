@@ -137,15 +137,15 @@ const SignUp = () => {
           </button>
         )}
 
-        <p className='mt-2'>
-          Already have an account ?
-          <Link to='/login' className='ml-2 hover:underline'>
-            Log In
-          </Link>
-        </p>
-      </form>
-    </section>
-  );
+				<p classNameNameNameName="mt-2">
+					Already have an account ?
+					<Link to="/login" classNameNameNameName="ml-2 hover:underline">
+						Log In
+					</Link>
+				</p>
+			</form>
+		</section>
+	);
 };
 
 export default SignUp;
