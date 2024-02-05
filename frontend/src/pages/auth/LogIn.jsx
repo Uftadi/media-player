@@ -11,15 +11,14 @@ const LogIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthTrue, setIsAuthTrue] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(
-    {
-      email: '',
-      password: '',
-    },
-    {
-      withCredentials: true,
-    }
-  );
+  const [userData, setUserData] = useState({
+    email: '',
+    password: '',
+  });
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    password: '',
+  });
 
   const handleDataChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -30,33 +29,44 @@ const LogIn = () => {
     setLoading(true);
 
     try {
-      axios
-        .post(`${backendApiUrl}/login`, userData, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data.success);
-          if (res.data.success === false) {
-            setLoading(false);
-            setIsAuthTrue(true);
-          } else if (res.data.success === true) {
-            navigate('/main');
-          }
+      const res = await axios.post(`${backendApiUrl}/login`, userData, {
+        withCredentials: true,
+      });
+
+      if (res.data.errors) {
+        const errors = {};
+        res.data.errors.forEach((error) => {
+          errors[error.path] = error.msg;
         });
+
+        setFieldErrors(errors);
+        setLoading(false);
+        setIsAuthTrue(false);
+        console.log(errors);
+      } else if (res.data.success) {
+        navigate('/main');
+        const userId = res.data.userId;
+        localStorage.setItem('userId', userId);
+      } else {
+        setFieldErrors((error) => error === '');
+        setLoading(false);
+        setIsAuthTrue(true);
+      }
     } catch (error) {
       console.log('error while logging in:', error);
     }
   };
 
   return (
-    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#0a1b34] text-white'>
+    <section className='min-h-[800px] h-screen flex flex-col justify-center items-center bg-[#1d201f] text-white'>
       <Link to='/' className='mb-8 text-xl font-black'>
         Media Plyer
       </Link>
 
       <form
-        className='w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#184675] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl'
+        className='w-5/6 md:w-3/6 xl:w-2/6 mx-auto bg-[#156d4b] shadow-md shadow-stone-950/50 py-10 px-5 rounded-xl'
         onSubmit={handleFormSubmit}
+        noValidate
       >
         <div>
           <label htmlFor='email'>Email</label>
@@ -65,11 +75,14 @@ const LogIn = () => {
             type='email'
             id='email'
             name='email'
-            required
             onChange={handleDataChange}
           />
         </div>
-
+        {fieldErrors.email && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.email}
+          </span>
+        )}
         <div className='relative'>
           <label htmlFor='password'>Password</label>
           <input
@@ -77,7 +90,6 @@ const LogIn = () => {
             type={showPassword ? 'text' : 'password'}
             id='password'
             name='password'
-            required
             onChange={handleDataChange}
           />
           <i
@@ -87,16 +99,22 @@ const LogIn = () => {
             onClick={() => setShowPassword(!showPassword)}
           ></i>
         </div>
+        {fieldErrors.password && (
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
+            {fieldErrors.password}
+          </span>
+        )}
+
         {isAuthTrue && (
-          <p className='text-[#eff96c] font-bold w-fit mb-3'>
+          <span className='bg-red-700 p-1 mb-2 block w-fit rounded-md'>
             The Email or Password entered is incorrect.
-          </p>
+          </span>
         )}
 
         {loading ? (
           <button
             disabled
-            className='font-bold bg-[#0b1c34] w-full p-2 mb-3 rounded-md flex justify-center items-center cursor-wait'
+            className='font-bold bg-[#232326] w-full p-2 mb-3 rounded-md flex justify-center items-center cursor-wait'
           >
             <svg
               aria-hidden='true'
@@ -119,13 +137,12 @@ const LogIn = () => {
           </button>
         ) : (
           <button
-            className='font-bold bg-[#0b1c34] w-full mx-auto transition-colors delay-75 duration-500 text-textWhite block rounded-md p-2 mb-3 border border-[#0b1c34] hover:border-white'
+            className='font-bold bg-[#232326] w-full mx-auto transition-colors delay-75 duration-500 text-textWhite block rounded-md p-2 mb-3 border border-[#0b1c34] hover:border-white'
             type='submit'
           >
             Log In
           </button>
         )}
-
         <p className='mt-2'>
           Don't have an account ?
           <Link to='/signup' className='ml-2 hover:underline'>

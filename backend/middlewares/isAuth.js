@@ -32,6 +32,7 @@ const findUser = async (userId, res) => {
     return res.status(200).json({
       isAuth: true,
       userId: userId,
+      username: existingUser.firstName + ' ' + existingUser.lastName,
     });
   } else {
     return res.status(401).send('User not found');

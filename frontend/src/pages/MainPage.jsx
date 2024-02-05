@@ -1,13 +1,15 @@
-import { useContext, useEffect, useState } from 'react';
+import cookie from 'js-cookie';
 import { UserContext } from '../context/UserContextProvider';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import { StoreMedia } from '../components';
+
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import cookie from 'js-cookie';
 
 const MainPage = () => {
-  const { backendApiUrl } = useContext(UserContext);
+  const { backendApiUrl, setUserName } = useContext(UserContext);
   const navigate = useNavigate();
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleIfUserHasToken = () => {
@@ -27,14 +29,13 @@ const MainPage = () => {
   useEffect(() => {
     const token = handleIfUserHasToken();
 
-    console.log(token);
     if (token) {
       axios
         .post(`${backendApiUrl}/isAuth`, { token }, { withCredentials: true })
         .then((res) => {
-          console.log(res.data.isAuth);
           if (res.data.isAuth) {
             setIsAuthenticated(true);
+            setUserName(res.data.username);
           } else {
             navigate('/');
           }
@@ -45,7 +46,16 @@ const MainPage = () => {
     }
   }, [isAuthenticated]);
 
-  return isAuthenticated && <div>MainPage</div>;
+  return (
+    isAuthenticated && (
+      <>
+        <Navbar />
+        <div className='h-[calc(100vh-94px)] w-full flex justify-around bg-[#232326] relative pt-8'>
+          <StoreMedia />
+        </div>
+      </>
+    )
+  );
 };
 
 export default MainPage;

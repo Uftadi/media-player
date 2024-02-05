@@ -4,6 +4,8 @@ import 'dotenv/config';
 async function connectMongoose() {
   const { DB_NAME, DB_USER, DB_PASSWORD, DB_CLUSTER } = process.env;
 
+  console.log({ DB_NAME, DB_USER, DB_PASSWORD, DB_CLUSTER });
+
   const URI = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_CLUSTER}.cwpbtvj.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
 
   try {
