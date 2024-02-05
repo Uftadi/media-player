@@ -76,7 +76,8 @@ export const LogIn = async (req, res) => {
 
     return res.send({
       success: true,
-      msg: `User ${loggedUser._id} logged in`,
+      msg: 'User logged in',
+      userId: loggedUser._id,
     });
   } catch (error) {
     console.error(error);

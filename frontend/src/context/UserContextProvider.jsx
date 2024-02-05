@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const UserContext = createContext({});
@@ -9,10 +9,14 @@ export const UserContextProvider = ({ children }) => {
       ? 'http://localhost:3000'
       : 'vercel';
 
+  const [userName, setUserName] = useState('');
+
   return (
     <UserContext.Provider
       value={{
         backendApiUrl,
+        userName,
+        setUserName,
       }}
     >
       {children}

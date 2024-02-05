@@ -12,6 +12,7 @@ export const userSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  media: Array,
 });
 
 export default mongoose.model('User', userSchema);
